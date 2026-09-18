@@ -1,0 +1,16 @@
+{
+    "geode": "5.0.0",
+    "gd": {
+        "android": "2.2081"
+    },
+    "id": "proboom481.externalhack",
+    "name": "ExternalHack",
+    "version": "v1.0.0",
+    "developer": "proboom481",
+    "description": "An Android Geometry Dash enhancement mod.",
+    "tags": [
+        "enhancement",
+        "utility",
+        "android"
+    ]
+}
