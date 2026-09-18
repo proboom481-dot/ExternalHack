@@ -5,35 +5,41 @@ using namespace geode::prelude;
 
 
 // ============================================================
-// ExternalHack Menu
+// ExternalHack
 // ============================================================
 
 class ExternalHackMenu : public FLAlertLayer {
 protected:
 
-    int m_category = 0;
     CCMenu* m_categoryMenu = nullptr;
     CCMenu* m_featureMenu = nullptr;
 
     bool init() {
+
         if (!FLAlertLayer::init(
             nullptr,
             "ExternalHack",
             "",
             "CLOSE",
             nullptr,
-            850.f,
+            760.f,
             false,
-            500.f,
-            1.0f
+            430.f,
+            0.8f
         )) {
             return false;
         }
 
-        auto winSize = CCDirector::sharedDirector()->getWinSize();
+        // ----------------------------------------------------
+        // WINDOW SIZE
+        // ----------------------------------------------------
+
+        constexpr float W = 760.f;
+        constexpr float H = 430.f;
+
 
         // ----------------------------------------------------
-        // Title
+        // TITLE
         // ----------------------------------------------------
 
         auto title = CCLabelBMFont::create(
@@ -42,116 +48,192 @@ protected:
         );
 
         title->setPosition(
-            winSize.width / 2.f,
-            winSize.height - 35.f
+            W / 2.f,
+            H - 25.f
         );
 
-        title->setScale(0.8f);
+        title->setScale(0.55f);
 
-        this->m_mainLayer->addChild(title);
+        m_mainLayer->addChild(
+            title,
+            20
+        );
 
 
         // ----------------------------------------------------
-        // UP ARROW - CENTER TOP
+        // UP ARROW - CENTER
         // ----------------------------------------------------
 
         auto arrowMenu = CCMenu::create();
         arrowMenu->setPosition(0, 0);
 
-        this->m_mainLayer->addChild(
+        m_mainLayer->addChild(
             arrowMenu,
-            20
+            30
         );
 
-        auto arrow = CCMenuItemSpriteExtra::create(
+        auto arrowSprite =
             CCSprite::createWithSpriteFrameName(
                 "GJ_arrow01_001.png"
-            ),
+            );
+
+        auto arrow = CCMenuItemSpriteExtra::create(
+            arrowSprite,
             this,
-            menu_selector(ExternalHackMenu::onArrow)
+            menu_selector(
+                ExternalHackMenu::onArrow
+            )
         );
 
-        arrow->setScale(0.7f);
+        arrow->setScale(0.55f);
 
         arrow->setPosition(
-            winSize.width / 2.f,
-            winSize.height - 78.f
+            W / 2.f,
+            H - 60.f
         );
 
         arrowMenu->addChild(arrow);
 
 
         // ----------------------------------------------------
-        // LEFT CATEGORY MENU
+        // CATEGORY MENU
         // ----------------------------------------------------
 
         m_categoryMenu = CCMenu::create();
         m_categoryMenu->setPosition(0, 0);
 
-        this->m_mainLayer->addChild(
+        m_mainLayer->addChild(
             m_categoryMenu,
             10
         );
 
-        createCategory("LEVEL", 0, 175.f);
-        createCategory("UNIVERSAL", 1, 130.f);
-        createCategory("CREATOR", 2, 85.f);
-        createCategory("COSMETIC", 3, 40.f);
-        createCategory("SPEEDHACK", 4, -5.f);
-        createCategory("ICON EFFECTS", 5, -50.f);
-        createCategory("LABELS", 6, -95.f);
-        createCategory("SHORTCUTS", 7, -140.f);
-        createCategory("CONFIG", 8, -185.f);
-        createCategory("SEARCH", 9, -230.f);
-        createCategory("FAVOURITES", 10, -275.f);
+
+        const float categoryX = 92.f;
+
+        createCategory(
+            "LEVEL",
+            0,
+            categoryX,
+            335.f
+        );
+
+        createCategory(
+            "UNIVERSAL",
+            1,
+            categoryX,
+            300.f
+        );
+
+        createCategory(
+            "CREATOR",
+            2,
+            categoryX,
+            265.f
+        );
+
+        createCategory(
+            "COSMETIC",
+            3,
+            categoryX,
+            230.f
+        );
+
+        createCategory(
+            "SPEEDHACK",
+            4,
+            categoryX,
+            195.f
+        );
+
+        createCategory(
+            "ICON EFFECTS",
+            5,
+            categoryX,
+            160.f
+        );
+
+        createCategory(
+            "LABELS",
+            6,
+            categoryX,
+            125.f
+        );
+
+        createCategory(
+            "SHORTCUTS",
+            7,
+            categoryX,
+            90.f
+        );
+
+        createCategory(
+            "CONFIG",
+            8,
+            categoryX,
+            55.f
+        );
+
+        createCategory(
+            "SEARCH",
+            9,
+            categoryX,
+            20.f
+        );
 
 
         // ----------------------------------------------------
-        // FEATURE MENU
+        // FEATURES
         // ----------------------------------------------------
 
         m_featureMenu = CCMenu::create();
         m_featureMenu->setPosition(0, 0);
 
-        this->m_mainLayer->addChild(
+        m_mainLayer->addChild(
             m_featureMenu,
             10
         );
 
         showLevelFeatures();
 
+
         return true;
     }
 
 
     // ========================================================
-    // CATEGORY BUTTON
+    // CATEGORY
     // ========================================================
 
     void createCategory(
         const char* name,
         int id,
+        float x,
         float y
     ) {
+
+        auto sprite = ButtonSprite::create(
+            name,
+            125,
+            true,
+            "bigFont.fnt",
+            "GJ_button_04.png",
+            20.f,
+            0.55f
+        );
+
         auto button = CCMenuItemSpriteExtra::create(
-            ButtonSprite::create(
-                name,
-                150,
-                true,
-                "bigFont.fnt",
-                "GJ_button_04.png",
-                25.f,
-                0.6f
-            ),
+            sprite,
             this,
-            menu_selector(ExternalHackMenu::onCategory)
+            menu_selector(
+                ExternalHackMenu::onCategory
+            )
         );
 
         button->setTag(id);
 
         button->setPosition(
-            105.f,
-            250.f + y
+            x,
+            y
         );
 
         m_categoryMenu->addChild(button);
@@ -159,7 +241,7 @@ protected:
 
 
     // ========================================================
-    // FEATURE BUTTON
+    // FEATURE
     // ========================================================
 
     void createFeature(
@@ -168,96 +250,122 @@ protected:
         float x,
         float y
     ) {
-        auto checkbox = CCMenuItemToggler::create(
+
+        // CHECKBOX
+
+        auto off =
             CCSprite::createWithSpriteFrameName(
                 "GJ_checkOff_001.png"
-            ),
+            );
+
+        auto on =
             CCSprite::createWithSpriteFrameName(
                 "GJ_checkOn_001.png"
-            ),
+            );
+
+        auto checkbox = CCMenuItemToggler::create(
+            off,
+            on,
             this,
-            menu_selector(ExternalHackMenu::onFeature)
+            menu_selector(
+                ExternalHackMenu::onFeature
+            )
         );
 
         checkbox->setTag(id);
+        checkbox->setScale(0.55f);
 
         checkbox->setPosition(
             x,
             y
         );
 
-        m_featureMenu->addChild(checkbox);
+        m_featureMenu->addChild(
+            checkbox
+        );
 
+
+        // LABEL
 
         auto label = CCLabelBMFont::create(
             name,
             "bigFont.fnt"
         );
 
-        label->setScale(0.55f);
+        label->setScale(0.40f);
 
         label->setAnchorPoint(
             {0.f, 0.5f}
         );
 
         label->setPosition(
-            x + 22.f,
+            x + 17.f,
             y
         );
 
-        m_featureMenu->addChild(label);
+        m_featureMenu->addChild(
+            label
+        );
 
 
-        // + button
+        // PLUS
 
         auto plusSprite = ButtonSprite::create(
             "+",
-            30,
+            24,
             true,
             "bigFont.fnt",
             "GJ_button_01.png",
-            25.f,
-            0.8f
+            18.f,
+            0.65f
         );
 
         auto plus = CCMenuItemSpriteExtra::create(
             plusSprite,
             this,
-            menu_selector(ExternalHackMenu::onPlus)
+            menu_selector(
+                ExternalHackMenu::onPlus
+            )
         );
 
         plus->setTag(id);
 
         plus->setPosition(
-            x + 170.f,
+            x + 175.f,
             y
         );
 
-        m_featureMenu->addChild(plus);
-
-
-        // info button
-
-        auto infoSprite = CCSprite::createWithSpriteFrameName(
-            "GJ_infoIcon_001.png"
+        m_featureMenu->addChild(
+            plus
         );
+
+
+        // INFO
+
+        auto infoSprite =
+            CCSprite::createWithSpriteFrameName(
+                "GJ_infoIcon_001.png"
+            );
 
         auto info = CCMenuItemSpriteExtra::create(
             infoSprite,
             this,
-            menu_selector(ExternalHackMenu::onInfo)
+            menu_selector(
+                ExternalHackMenu::onInfo
+            )
         );
 
-        info->setScale(0.7f);
-
         info->setTag(id);
+        info->setScale(0.55f);
 
         info->setPosition(
-            x + 205.f,
+            x + 202.f,
             y
         );
 
-        m_featureMenu->addChild(info);
+        m_featureMenu->addChild(
+            info
+        );
     }
 
 
@@ -267,11 +375,11 @@ protected:
 
     void showLevelFeatures() {
 
-        float leftX = 350.f;
-        float rightX = 650.f;
+        const float leftX = 300.f;
+        const float rightX = 510.f;
 
-        float startY = 375.f;
-        float spacing = 48.f;
+        const float firstY = 320.f;
+        const float gap = 34.f;
 
 
         // LEFT
@@ -280,63 +388,56 @@ protected:
             "NOCLIP",
             1,
             leftX,
-            startY
+            firstY
         );
 
         createFeature(
             "SHOW HITBOXES",
             2,
             leftX,
-            startY - spacing
+            firstY - gap
         );
 
         createFeature(
             "HITBOX TRAIL",
             3,
             leftX,
-            startY - spacing * 2
+            firstY - gap * 2
         );
 
         createFeature(
             "SHOW TRAJECTORY",
             4,
             leftX,
-            startY - spacing * 3
+            firstY - gap * 3
         );
 
         createFeature(
             "ACCURATE HITBOXES",
             5,
             leftX,
-            startY - spacing * 4
+            firstY - gap * 4
         );
 
         createFeature(
             "AUTO COLLECT COINS",
             6,
             leftX,
-            startY - spacing * 5
+            firstY - gap * 5
         );
 
         createFeature(
             "AUTOCLICKER",
             7,
             leftX,
-            startY - spacing * 6
+            firstY - gap * 6
         );
 
         createFeature(
             "CLASSIC PERCENTAGE",
             8,
             leftX,
-            startY - spacing * 7
-        );
-
-        createFeature(
-            "CONFIRM PRACTICE",
-            9,
-            leftX,
-            startY - spacing * 8
+            firstY - gap * 7
         );
 
 
@@ -346,63 +447,56 @@ protected:
             "INSTANT COMPLETE",
             10,
             rightX,
-            startY
+            firstY
         );
 
         createFeature(
             "HITBOXES ON DEATH",
             11,
             rightX,
-            startY - spacing
+            firstY - gap
         );
 
         createFeature(
             "STARTPOS SWITCHER",
             12,
             rightX,
-            startY - spacing * 2
+            firstY - gap * 2
         );
 
         createFeature(
             "ACCURATE PERCENTAGE",
             13,
             rightX,
-            startY - spacing * 3
+            firstY - gap * 3
         );
 
         createFeature(
-            "ALL MODES PLATFORMER",
+            "PLATFORMER MODE",
             14,
             rightX,
-            startY - spacing * 4
+            firstY - gap * 4
         );
 
         createFeature(
-            "AUTO PRACTICE MODE",
+            "AUTO PRACTICE",
             15,
             rightX,
-            startY - spacing * 5
+            firstY - gap * 5
         );
 
         createFeature(
-            "BEST IN PERCENTAGE",
+            "BEST PERCENTAGE",
             16,
             rightX,
-            startY - spacing * 6
+            firstY - gap * 6
         );
 
         createFeature(
             "COIN TRACERS",
             17,
             rightX,
-            startY - spacing * 7
-        );
-
-        createFeature(
-            "CONFIRM RESTART",
-            18,
-            rightX,
-            startY - spacing * 8
+            firstY - gap * 7
         );
     }
 
@@ -414,60 +508,57 @@ protected:
     void onCategory(CCObject* sender) {
 
         auto button =
-            static_cast<CCMenuItemSpriteExtra*>(sender);
+            static_cast<CCMenuItemSpriteExtra*>(
+                sender
+            );
 
-        m_category = button->getTag();
+        int category =
+            button->getTag();
 
         m_featureMenu->removeAllChildren();
 
-        if (m_category == 0) {
+
+        if (category == 0) {
+
             showLevelFeatures();
-        }
-        else {
-            showComingSoon();
+
+        } else {
+
+            auto text =
+                CCLabelBMFont::create(
+                    "MORE FEATURES COMING",
+                    "bigFont.fnt"
+                );
+
+            text->setPosition(
+                510.f,
+                210.f
+            );
+
+            text->setScale(0.5f);
+
+            m_featureMenu->addChild(
+                text
+            );
         }
     }
 
 
     // ========================================================
-    // OTHER CATEGORIES
-    // ========================================================
-
-    void showComingSoon() {
-
-        auto winSize =
-            CCDirector::sharedDirector()->getWinSize();
-
-        auto text = CCLabelBMFont::create(
-            "FEATURES WILL BE ADDED HERE",
-            "bigFont.fnt"
-        );
-
-        text->setPosition(
-            winSize.width / 2.f + 100.f,
-            winSize.height / 2.f
-        );
-
-        text->setScale(0.65f);
-
-        m_featureMenu->addChild(text);
-    }
-
-
-    // ========================================================
-    // FEATURE TOGGLE
+    // TOGGLE
     // ========================================================
 
     void onFeature(CCObject* sender) {
 
         auto toggle =
-            static_cast<CCMenuItemToggler*>(sender);
-
-        int id = toggle->getTag();
+            static_cast<CCMenuItemToggler*>(
+                sender
+            );
 
         log::info(
-            "ExternalHack feature {} toggled",
-            id
+            "ExternalHack feature {} = {}",
+            toggle->getTag(),
+            toggle->isToggled()
         );
     }
 
@@ -479,20 +570,14 @@ protected:
     void onPlus(CCObject* sender) {
 
         auto button =
-            static_cast<CCMenuItemSpriteExtra*>(sender);
-
-        int id = button->getTag();
+            static_cast<CCMenuItemSpriteExtra*>(
+                sender
+            );
 
         log::info(
-            "ExternalHack settings for feature {}",
-            id
+            "Settings for feature {}",
+            button->getTag()
         );
-
-        FLAlertLayer::create(
-            "ExternalHack",
-            "Additional settings will be added here.",
-            "OK"
-        )->show();
     }
 
 
@@ -503,15 +588,15 @@ protected:
     void onInfo(CCObject* sender) {
 
         auto button =
-            static_cast<CCMenuItemSpriteExtra*>(sender);
-
-        int id = button->getTag();
+            static_cast<CCMenuItemSpriteExtra*>(
+                sender
+            );
 
         FLAlertLayer::create(
             "ExternalHack",
             fmt::format(
                 "Feature ID: {}",
-                id
+                button->getTag()
             ).c_str(),
             "OK"
         )->show();
@@ -523,7 +608,6 @@ protected:
     // ========================================================
 
     void onArrow(CCObject*) {
-
         this->keyBackClicked();
     }
 
@@ -532,10 +616,13 @@ public:
 
     static ExternalHackMenu* create() {
 
-        auto ret = new ExternalHackMenu();
+        auto ret =
+            new ExternalHackMenu();
 
         if (ret && ret->init()) {
+
             ret->autorelease();
+
             return ret;
         }
 
@@ -559,9 +646,13 @@ class $modify(
 
         PauseLayer::customSetup();
 
-        auto menu = CCMenu::create();
+        auto menu =
+            CCMenu::create();
 
-        menu->setPosition(0, 0);
+        menu->setPosition(
+            0,
+            0
+        );
 
         this->addChild(
             menu,
@@ -569,27 +660,34 @@ class $modify(
         );
 
 
-        auto sprite =
-            ButtonSprite::create("EXTERNAL");
-
         auto button =
             CCMenuItemSpriteExtra::create(
-                sprite,
+                ButtonSprite::create(
+                    "EXTERNAL"
+                ),
                 this,
                 menu_selector(
-                    ExternalHackPauseLayer::onExternalHack
+                    ExternalHackPauseLayer::
+                    onExternalHack
                 )
             );
 
-        auto winSize =
-            CCDirector::sharedDirector()->getWinSize();
+
+        auto size =
+            CCDirector::
+            sharedDirector()->
+            getWinSize();
+
 
         button->setPosition(
-            winSize.width - 70.f,
+            size.width - 65.f,
             45.f
         );
 
-        menu->addChild(button);
+
+        menu->addChild(
+            button
+        );
     }
 
 
