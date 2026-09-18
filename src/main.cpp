@@ -10,17 +10,27 @@ using namespace geode::prelude;
 
 class ExternalHackMenu : public FLAlertLayer {
 protected:
+
     CCMenu* m_categories = nullptr;
     CCMenu* m_features = nullptr;
+    CCMenu* m_topMenu = nullptr;
+
+    bool m_noclip = false;
+    bool m_hitboxes = false;
+    bool m_hitboxTrail = false;
+    bool m_trajectory = false;
+    bool m_startpos = false;
+    bool m_autoPractice = false;
+    bool m_autoclicker = false;
+
 
     bool init() {
-        // Компактный размер.
-        // На Android это будет примерно размером с референс.
+
         if (!FLAlertLayer::init(
             nullptr,
-            "EXTERNALHACK",
             "",
-            "CLOSE",
+            "",
+            "",
             nullptr,
             540.f,
             false,
@@ -30,14 +40,89 @@ protected:
             return false;
         }
 
-        // ----------------------------------------------------
-        // ARROW - СТРОГО ПО ЦЕНТРУ СВЕРХУ
-        // ----------------------------------------------------
+        auto size = m_mainLayer->getContentSize();
 
-        auto arrowMenu = CCMenu::create();
-        arrowMenu->setPosition(0, 0);
 
-        m_mainLayer->addChild(arrowMenu, 50);
+        // ====================================================
+        // BACKGROUND
+        // ====================================================
+
+        auto background = CCLayerColor::create(
+            {15, 22, 32, 245},
+            size.width - 20.f,
+            size.height - 20.f
+        );
+
+        background->setPosition(
+            10.f,
+            10.f
+        );
+
+        m_mainLayer->addChild(
+            background,
+            0
+        );
+
+
+        // ====================================================
+        // TOP LINE
+        // ====================================================
+
+        auto topLine = CCLayerColor::create(
+            {45, 190, 205, 255},
+            size.width - 20.f,
+            3.f
+        );
+
+        topLine->setPosition(
+            10.f,
+            size.height - 13.f
+        );
+
+        m_mainLayer->addChild(
+            topLine,
+            2
+        );
+
+
+        // ====================================================
+        // TITLE
+        // ====================================================
+
+        auto title = CCLabelBMFont::create(
+            "EXTERNALHACK",
+            "goldFont.fnt"
+        );
+
+        title->setPosition(
+            size.width / 2.f,
+            size.height - 32.f
+        );
+
+        title->setScale(0.52f);
+
+        m_mainLayer->addChild(
+            title,
+            10
+        );
+
+
+        // ====================================================
+        // TOP BUTTON MENU
+        // ====================================================
+
+        m_topMenu = CCMenu::create();
+        m_topMenu->setPosition(0, 0);
+
+        m_mainLayer->addChild(
+            m_topMenu,
+            500
+        );
+
+
+        // ====================================================
+        // ARROW
+        // ====================================================
 
         auto arrowSprite =
             CCSprite::createWithSpriteFrameName(
@@ -48,68 +133,154 @@ protected:
             arrowSprite,
             this,
             menu_selector(
-                ExternalHackMenu::onArrow
+                ExternalHackMenu::onBack
             )
         );
 
         arrow->setScale(0.55f);
 
+        // СТРОГО ПО ЦЕНТРУ
         arrow->setPosition(
-            270.f,
-            330.f
+            size.width / 2.f,
+            size.height - 8.f
         );
 
-        arrowMenu->addChild(arrow);
+        m_topMenu->addChild(arrow);
 
 
-        // ----------------------------------------------------
-        // CATEGORIES
-        // ----------------------------------------------------
+        // ====================================================
+        // EXIT
+        // ====================================================
+
+        auto exitSprite = ButtonSprite::create(
+            "EXIT",
+            65,
+            true,
+            "bigFont.fnt",
+            "GJ_button_06.png",
+            20.f,
+            0.48f
+        );
+
+        auto exit = CCMenuItemSpriteExtra::create(
+            exitSprite,
+            this,
+            menu_selector(
+                ExternalHackMenu::onExit
+            )
+        );
+
+        exit->setScale(0.85f);
+
+        // Нижний правый угол
+        exit->setPosition(
+            size.width - 48.f,
+            25.f
+        );
+
+        m_topMenu->addChild(exit);
+
+
+        // ====================================================
+        // CATEGORY AREA
+        // ====================================================
+
+        auto categoryBg = CCLayerColor::create(
+            {22, 32, 45, 255},
+            130.f,
+            size.height - 70.f
+        );
+
+        categoryBg->setPosition(
+            20.f,
+            35.f
+        );
+
+        m_mainLayer->addChild(
+            categoryBg,
+            1
+        );
+
+
+        // разделитель
+        auto separator = CCLayerColor::create(
+            {45, 190, 205, 255},
+            2.f,
+            size.height - 70.f
+        );
+
+        separator->setPosition(
+            150.f,
+            35.f
+        );
+
+        m_mainLayer->addChild(
+            separator,
+            2
+        );
+
+
+        // ====================================================
+        // CATEGORIES MENU
+        // ====================================================
 
         m_categories = CCMenu::create();
         m_categories->setPosition(0, 0);
 
         m_mainLayer->addChild(
             m_categories,
-            20
+            300
         );
 
-        const float categoryX = 82.f;
 
-        createCategory("LEVEL",        0, categoryX, 295.f);
-        createCategory("UNIVERSAL",    1, categoryX, 268.f);
-        createCategory("CREATOR",      2, categoryX, 241.f);
-        createCategory("COSMETIC",     3, categoryX, 214.f);
-        createCategory("SPEEDHACK",    4, categoryX, 187.f);
-        createCategory("ICON EFFECTS", 5, categoryX, 160.f);
-        createCategory("LABELS",       6, categoryX, 133.f);
-        createCategory("SHORTCUTS",    7, categoryX, 106.f);
-        createCategory("CONFIG",       8, categoryX, 79.f);
-        createCategory("SEARCH",       9, categoryX, 52.f);
-        createCategory("FAVOURITES",  10, categoryX, 25.f);
+        const char* categories[] = {
+            "LEVEL",
+            "UNIVERSAL",
+            "CREATOR",
+            "COSMETIC",
+            "SPEEDHACK",
+            "ICON EFFECTS",
+            "LABELS",
+            "SHORTCUTS",
+            "CONFIG",
+            "SEARCH"
+        };
 
 
-        // ----------------------------------------------------
-        // FEATURES
-        // ----------------------------------------------------
+        float startY = size.height - 75.f;
+
+        for (int i = 0; i < 10; i++) {
+
+            createCategory(
+                categories[i],
+                i,
+                85.f,
+                startY - i * 27.f
+            );
+        }
+
+
+        // ====================================================
+        // FEATURES MENU
+        // ====================================================
 
         m_features = CCMenu::create();
         m_features->setPosition(0, 0);
 
         m_mainLayer->addChild(
             m_features,
-            20
+            400
         );
 
-        showLevel();
 
+        showLevel();
 
         return true;
     }
 
 
     // ========================================================
-    // CATEGORY BUTTON
+    // CATEGORY
     // ========================================================
 
     void createCategory(
@@ -118,14 +289,17 @@ protected:
         float x,
         float y
     ) {
+
         auto sprite = ButtonSprite::create(
             name,
-            105,
+            108,
             true,
             "bigFont.fnt",
-            "GJ_button_04.png",
-            18.f,
-            0.45f
+            id == 0
+                ? "GJ_button_02.png"
+                : "GJ_button_04.png",
+            20.f,
+            0.34f
         );
 
         auto button = CCMenuItemSpriteExtra::create(
@@ -143,6 +317,12 @@ protected:
             y
         );
 
+        // Увеличиваем hitbox
+        button->setContentSize({
+            120.f,
+            27.f
+        });
+
         m_categories->addChild(button);
     }
 
@@ -155,9 +335,13 @@ protected:
         const char* name,
         int id,
         float x,
-        float y
+        float y,
+        bool value = false
     ) {
-        // Checkbox
+
+        // --------------------------------------------
+        // TOGGLE
+        // --------------------------------------------
 
         auto off =
             CCSprite::createWithSpriteFrameName(
@@ -174,12 +358,14 @@ protected:
             on,
             this,
             menu_selector(
-                ExternalHackMenu::onFeature
+                ExternalHackMenu::onToggle
             )
         );
 
         toggle->setTag(id);
-        toggle->setScale(0.43f);
+        toggle->setScale(0.48f);
+
+        toggle->toggle(value);
 
         toggle->setPosition(
             x,
@@ -189,7 +375,9 @@ protected:
         m_features->addChild(toggle);
 
 
-        // Text
+        // --------------------------------------------
+        // LABEL
+        // --------------------------------------------
 
         auto label = CCLabelBMFont::create(
             name,
@@ -200,26 +388,31 @@ protected:
             {0.f, 0.5f}
         );
 
-        label->setScale(0.31f);
-
         label->setPosition(
             x + 13.f,
             y
         );
 
-        m_features->addChild(label);
+        label->setScale(0.27f);
+
+        m_features->addChild(
+            label,
+            1
+        );
 
 
-        // Plus
+        // --------------------------------------------
+        // PLUS
+        // --------------------------------------------
 
         auto plusSprite = ButtonSprite::create(
             "+",
-            21,
+            18,
             true,
             "bigFont.fnt",
             "GJ_button_01.png",
-            15.f,
-            0.55f
+            13.f,
+            0.45f
         );
 
         auto plus = CCMenuItemSpriteExtra::create(
@@ -233,14 +426,16 @@ protected:
         plus->setTag(id);
 
         plus->setPosition(
-            x + 137.f,
+            x + 125.f,
             y
         );
 
         m_features->addChild(plus);
 
 
-        // Info
+        // --------------------------------------------
+        // INFO
+        // --------------------------------------------
 
         auto infoSprite =
             CCSprite::createWithSpriteFrameName(
@@ -256,10 +451,11 @@ protected:
         );
 
         info->setTag(id);
-        info->setScale(0.43f);
+
+        info->setScale(0.42f);
 
         info->setPosition(
-            x + 159.f,
+            x + 147.f,
             y
         );
 
@@ -272,191 +468,281 @@ protected:
     // ========================================================
 
     void showLevel() {
-        const float leftX = 220.f;
-        const float rightX = 410.f;
 
-        const float top = 292.f;
-        const float gap = 30.f;
+        const float left = 180.f;
+        const float right = 350.f;
 
+        const float top = 270.f;
+        const float gap = 27.f;
 
-        // LEFT
 
         createFeature(
             "NOCLIP",
             1,
-            leftX,
-            top
+            left,
+            top,
+            m_noclip
         );
 
         createFeature(
             "SHOW HITBOXES",
             2,
-            leftX,
-            top - gap
+            left,
+            top - gap,
+            m_hitboxes
         );
 
         createFeature(
             "HITBOX TRAIL",
             3,
-            leftX,
-            top - gap * 2
+            left,
+            top - gap * 2,
+            m_hitboxTrail
         );
 
         createFeature(
             "SHOW TRAJECTORY",
             4,
-            leftX,
-            top - gap * 3
+            left,
+            top - gap * 3,
+            m_trajectory
         );
 
         createFeature(
             "ACCURATE HITBOXES",
             5,
-            leftX,
+            left,
             top - gap * 4
         );
 
         createFeature(
             "AUTO COLLECT COINS",
             6,
-            leftX,
+            left,
             top - gap * 5
         );
 
         createFeature(
             "AUTOCLICKER",
             7,
-            leftX,
-            top - gap * 6
+            left,
+            top - gap * 6,
+            m_autoclicker
         );
 
         createFeature(
             "CLASSIC PERCENTAGE",
             8,
-            leftX,
+            left,
             top - gap * 7
         );
 
-        createFeature(
-            "CONFIRM PRACTICE",
-            9,
-            leftX,
-            top - gap * 8
-        );
-
-
-        // RIGHT
 
         createFeature(
             "INSTANT COMPLETE",
             10,
-            rightX,
+            right,
             top
         );
 
         createFeature(
             "HITBOXES ON DEATH",
             11,
-            rightX,
+            right,
             top - gap
         );
 
         createFeature(
             "STARTPOS SWITCHER",
             12,
-            rightX,
-            top - gap * 2
+            right,
+            top - gap * 2,
+            m_startpos
         );
 
         createFeature(
             "ACCURATE PERCENTAGE",
             13,
-            rightX,
+            right,
             top - gap * 3
         );
 
         createFeature(
             "PLATFORMER MODE",
             14,
-            rightX,
+            right,
             top - gap * 4
         );
 
         createFeature(
             "AUTO PRACTICE",
             15,
-            rightX,
-            top - gap * 5
+            right,
+            top - gap * 5,
+            m_autoPractice
         );
 
         createFeature(
             "BEST PERCENTAGE",
             16,
-            rightX,
+            right,
             top - gap * 6
         );
 
         createFeature(
             "COIN TRACERS",
             17,
-            rightX,
+            right,
             top - gap * 7
-        );
-
-        createFeature(
-            "CONFIRM RESTART",
-            18,
-            rightX,
-            top - gap * 8
         );
     }
 
 
     // ========================================================
-    // CATEGORY
+    // CATEGORY CLICK
     // ========================================================
 
     void onCategory(CCObject* sender) {
+
         auto button =
-            static_cast<CCMenuItemSpriteExtra*>(sender);
+            static_cast<CCMenuItemSpriteExtra*>(
+                sender
+            );
 
         int id = button->getTag();
 
         m_features->removeAllChildren();
+
 
         if (id == 0) {
             showLevel();
             return;
         }
 
-        auto text = CCLabelBMFont::create(
-            "NO FEATURES YET",
+
+        const char* title = "CATEGORY";
+
+        switch (id) {
+
+            case 1:
+                title = "UNIVERSAL";
+                break;
+
+            case 2:
+                title = "CREATOR";
+                break;
+
+            case 3:
+                title = "COSMETIC";
+                break;
+
+            case 4:
+                title = "SPEEDHACK";
+                break;
+
+            case 5:
+                title = "ICON EFFECTS";
+                break;
+
+            case 6:
+                title = "LABELS";
+                break;
+
+            case 7:
+                title = "SHORTCUTS";
+                break;
+
+            case 8:
+                title = "CONFIG";
+                break;
+
+            case 9:
+                title = "SEARCH";
+                break;
+        }
+
+
+        auto label = CCLabelBMFont::create(
+            title,
             "bigFont.fnt"
         );
 
-        text->setPosition(
-            365.f,
-            180.f
+        label->setPosition(
+            350.f,
+            190.f
         );
 
-        text->setScale(0.45f);
+        label->setScale(0.5f);
 
-        m_features->addChild(text);
+        m_features->addChild(label);
+
+
+        auto coming = CCLabelBMFont::create(
+            "FEATURES WILL BE ADDED HERE",
+            "bigFont.fnt"
+        );
+
+        coming->setPosition(
+            350.f,
+            160.f
+        );
+
+        coming->setScale(0.28f);
+
+        m_features->addChild(coming);
     }
 
 
     // ========================================================
-    // FEATURE TOGGLE
+    // TOGGLE
     // ========================================================
 
-    void onFeature(CCObject* sender) {
+    void onToggle(CCObject* sender) {
+
         auto toggle =
-            static_cast<CCMenuItemToggler*>(sender);
+            static_cast<CCMenuItemToggler*>(
+                sender
+            );
+
+        bool enabled = toggle->isToggled();
+
+
+        switch (toggle->getTag()) {
+
+            case 1:
+                m_noclip = enabled;
+                break;
+
+            case 2:
+                m_hitboxes = enabled;
+                break;
+
+            case 3:
+                m_hitboxTrail = enabled;
+                break;
+
+            case 4:
+                m_trajectory = enabled;
+                break;
+
+            case 7:
+                m_autoclicker = enabled;
+                break;
+
+            case 12:
+                m_startpos = enabled;
+                break;
+
+            case 15:
+                m_autoPractice = enabled;
+                break;
+        }
+
 
         log::info(
-            "ExternalHack feature {} -> {}",
+            "ExternalHack: feature {} = {}",
             toggle->getTag(),
-            toggle->isToggled()
+            enabled
         );
     }
 
@@ -466,28 +752,16 @@ protected:
     // ========================================================
 
     void onPlus(CCObject* sender) {
+
         auto button =
-            static_cast<CCMenuItemSpriteExtra*>(sender);
-
-        log::info(
-            "ExternalHack settings: {}",
-            button->getTag()
-        );
-    }
-
-
-    // ========================================================
-    // INFO
-    // ========================================================
-
-    void onInfo(CCObject* sender) {
-        auto button =
-            static_cast<CCMenuItemSpriteExtra*>(sender);
+            static_cast<CCMenuItemSpriteExtra*>(
+                sender
+            );
 
         FLAlertLayer::create(
             "ExternalHack",
             fmt::format(
-                "Feature ID: {}",
+                "Settings for feature {}",
                 button->getTag()
             ).c_str(),
             "OK"
@@ -496,10 +770,41 @@ protected:
 
 
     // ========================================================
-    // ARROW
+    // INFO
     // ========================================================
 
-    void onArrow(CCObject*) {
+    void onInfo(CCObject* sender) {
+
+        auto button =
+            static_cast<CCMenuItemSpriteExtra*>(
+                sender
+            );
+
+        FLAlertLayer::create(
+            "ExternalHack",
+            fmt::format(
+                "ExternalHack feature ID: {}",
+                button->getTag()
+            ).c_str(),
+            "OK"
+        )->show();
+    }
+
+
+    // ========================================================
+    // BACK
+    // ========================================================
+
+    void onBack(CCObject*) {
+        this->keyBackClicked();
+    }
+
+
+    // ========================================================
+    // EXIT
+    // ========================================================
+
+    void onExit(CCObject*) {
         this->keyBackClicked();
     }
 
@@ -507,14 +812,18 @@ protected:
 public:
 
     static ExternalHackMenu* create() {
+
         auto ret = new ExternalHackMenu();
 
         if (ret && ret->init()) {
+
             ret->autorelease();
+
             return ret;
         }
 
         CC_SAFE_DELETE(ret);
+
         return nullptr;
     }
 };
@@ -528,38 +837,55 @@ class $modify(
     ExternalHackPauseLayer,
     PauseLayer
 ) {
+
     void customSetup() {
+
         PauseLayer::customSetup();
 
+
         auto menu = CCMenu::create();
+
         menu->setPosition(0, 0);
 
         this->addChild(
             menu,
-            100
+            1000
         );
 
+
         auto button = CCMenuItemSpriteExtra::create(
-            ButtonSprite::create("EXTERNAL"),
+            ButtonSprite::create(
+                "EXTERNAL",
+                80,
+                true,
+                "bigFont.fnt",
+                "GJ_button_01.png",
+                25.f,
+                0.55f
+            ),
             this,
             menu_selector(
-                ExternalHackPauseLayer::onExternalHack
+                ExternalHackPauseLayer::openExternalHack
             )
         );
+
 
         auto size =
             CCDirector::sharedDirector()->getWinSize();
 
+
         button->setPosition(
-            size.width - 65.f,
+            size.width - 75.f,
             45.f
         );
+
 
         menu->addChild(button);
     }
 
 
-    void onExternalHack(CCObject*) {
+    void openExternalHack(CCObject*) {
+
         auto menu =
             ExternalHackMenu::create();
 
