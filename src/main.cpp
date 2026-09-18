@@ -32,15 +32,12 @@ protected:
         if (!CCLayerColor::initWithColor({0, 0, 0, 175}))
             return false;
 
-        this->setTouchEnabled(true);
-
-
-        auto screen = CCDirector::sharedDirector()->getWinSize();
+        auto screen =
+            CCDirector::sharedDirector()->getWinSize();
 
         float panelW = screen.width * 0.78f;
         float panelH = screen.height * 0.80f;
 
-        // Ограничения для очень больших/маленьких экранов
         if (panelW > 1050.f)
             panelW = 1050.f;
 
@@ -55,7 +52,7 @@ protected:
 
 
         // ====================================================
-        // MAIN PANEL
+        // BORDER
         // ====================================================
 
         auto border = CCLayerColor::create(
@@ -77,6 +74,10 @@ protected:
             1
         );
 
+
+        // ====================================================
+        // PANEL
+        // ====================================================
 
         auto panel = CCLayerColor::create(
             {12, 18, 27, 252}
@@ -124,8 +125,6 @@ protected:
         );
 
 
-        // Cyan header line
-
         auto headerLine = CCLayerColor::create(
             {35, 210, 220, 255}
         );
@@ -156,10 +155,12 @@ protected:
 
         title->setPosition({
             panelW / 2.f,
-            panelH - 28.f
+            panelH - 27.f
         });
 
-        title->setScale(0.48f);
+        title->setScale(
+            0.48f
+        );
 
         panel->addChild(
             title,
@@ -174,10 +175,12 @@ protected:
 
         version->setPosition({
             panelW / 2.f,
-            panelH - 45.f
+            panelH - 44.f
         });
 
-        version->setScale(0.20f);
+        version->setScale(
+            0.20f
+        );
 
         panel->addChild(
             version,
@@ -203,7 +206,7 @@ protected:
 
 
         // ====================================================
-        // TOP ARROW
+        // ARROW
         // ====================================================
 
         auto arrowSprite =
@@ -262,8 +265,8 @@ protected:
         );
 
         exit->setPosition({
-            panelW - 38.f,
-            18.f
+            panelW - 42.f,
+            20.f
         });
 
         m_topMenu->addChild(
@@ -298,7 +301,7 @@ protected:
 
 
         // ====================================================
-        // SIDEBAR SEPARATOR
+        // SEPARATOR
         // ====================================================
 
         auto separator = CCLayerColor::create(
@@ -326,7 +329,7 @@ protected:
         // ====================================================
 
         m_selectedCategory = CCLayerColor::create(
-            {30, 175, 185, 80}
+            {30, 175, 185, 100}
         );
 
         m_selectedCategory->setContentSize({
@@ -336,7 +339,7 @@ protected:
 
         m_selectedCategory->setPosition({
             18.f,
-            panelH - 92.f
+            panelH - 106.f
         });
 
         panel->addChild(
@@ -376,7 +379,9 @@ protected:
         };
 
 
-        float categoryStartY = panelH - 92.f;
+        float categoryStartY =
+            panelH - 92.f;
+
 
         for (int i = 0; i < 10; i++) {
 
@@ -406,14 +411,14 @@ protected:
         );
 
 
-        showCategory(0);
+        showLevel();
 
         return true;
     }
 
 
     // ========================================================
-    // CATEGORY BUTTON
+    // CATEGORY
     // ========================================================
 
     void createCategory(
@@ -518,7 +523,7 @@ protected:
 
 
         // ====================================================
-        // FEATURE NAME
+        // NAME
         // ====================================================
 
         auto label = CCLabelBMFont::create(
@@ -549,34 +554,34 @@ protected:
         // PLUS
         // ====================================================
 
-        auto plus = CCLabelBMFont::create(
+        auto plusLabel = CCLabelBMFont::create(
             "+",
             "goldFont.fnt"
         );
 
-        plus->setScale(
+        plusLabel->setScale(
             0.38f
         );
 
-        auto plusButton = CCMenuItemLabel::create(
-            plus,
+        auto plus = CCMenuItemLabel::create(
+            plusLabel,
             this,
             menu_selector(
                 ExternalHackLayer::onPlus
             )
         );
 
-        plusButton->setTag(
+        plus->setTag(
             id
         );
 
-        plusButton->setPosition({
+        plus->setPosition({
             x + 132.f,
             y
         });
 
         m_featureMenu->addChild(
-            plusButton
+            plus
         );
 
 
@@ -762,37 +767,170 @@ protected:
 
         if (id == 1) {
 
-            createFeature("NO SHADERS", 20, leftX, startY);
-            createFeature("NO PARTICLES", 21, leftX, startY - gap);
-            createFeature("NO SHAKE", 22, leftX, startY - gap * 2);
-            createFeature("NO TRAIL", 23, leftX, startY - gap * 3);
-            createFeature("NO CAMERA MOVE", 24, leftX, startY - gap * 4);
-            createFeature("NO CAMERA ZOOM", 25, leftX, startY - gap * 5);
-            createFeature("NO DEATH EFFECT", 26, leftX, startY - gap * 6);
-            createFeature("PRACTICE MUSIC", 27, leftX, startY - gap * 7);
+            createFeature(
+                "NO SHADERS",
+                20,
+                leftX,
+                startY
+            );
 
-            createFeature("FPS BYPASS", 28, rightX, startY);
-            createFeature("TPS BYPASS", 29, rightX, startY - gap);
-            createFeature("FORCE LOW DETAIL", 30, rightX, startY - gap * 2);
-            createFeature("NO GLOW", 31, rightX, startY - gap * 3);
-            createFeature("NO BLENDING", 32, rightX, startY - gap * 4);
-            createFeature("HIDE PAUSE BUTTON", 33, rightX, startY - gap * 5);
+            createFeature(
+                "NO PARTICLES",
+                21,
+                leftX,
+                startY - gap
+            );
+
+            createFeature(
+                "NO SHAKE",
+                22,
+                leftX,
+                startY - gap * 2
+            );
+
+            createFeature(
+                "NO TRAIL",
+                23,
+                leftX,
+                startY - gap * 3
+            );
+
+            createFeature(
+                "NO CAMERA MOVE",
+                24,
+                leftX,
+                startY - gap * 4
+            );
+
+            createFeature(
+                "NO CAMERA ZOOM",
+                25,
+                leftX,
+                startY - gap * 5
+            );
+
+            createFeature(
+                "NO DEATH EFFECT",
+                26,
+                leftX,
+                startY - gap * 6
+            );
+
+            createFeature(
+                "PRACTICE MUSIC",
+                27,
+                leftX,
+                startY - gap * 7
+            );
+
+
+            createFeature(
+                "FPS BYPASS",
+                28,
+                rightX,
+                startY
+            );
+
+            createFeature(
+                "TPS BYPASS",
+                29,
+                rightX,
+                startY - gap
+            );
+
+            createFeature(
+                "FORCE LOW DETAIL",
+                30,
+                rightX,
+                startY - gap * 2
+            );
+
+            createFeature(
+                "NO GLOW",
+                31,
+                rightX,
+                startY - gap * 3
+            );
+
+            createFeature(
+                "NO BLENDING",
+                32,
+                rightX,
+                startY - gap * 4
+            );
+
+            createFeature(
+                "HIDE PAUSE BUTTON",
+                33,
+                rightX,
+                startY - gap * 5
+            );
         }
+
         else if (id == 4) {
 
-            createFeature("SPEEDHACK", 40, leftX, startY);
-            createFeature("0.5X SPEED", 41, leftX, startY - gap);
-            createFeature("1.5X SPEED", 42, leftX, startY - gap * 2);
-            createFeature("2X SPEED", 43, leftX, startY - gap * 3);
-            createFeature("3X SPEED", 44, leftX, startY - gap * 4);
-            createFeature("4X SPEED", 45, leftX, startY - gap * 5);
+            createFeature(
+                "SPEEDHACK",
+                40,
+                leftX,
+                startY
+            );
 
-            createFeature("CUSTOM SPEED", 46, rightX, startY);
-            createFeature("FREEZE", 47, rightX, startY - gap);
+            createFeature(
+                "0.5X SPEED",
+                41,
+                leftX,
+                startY - gap
+            );
+
+            createFeature(
+                "1.5X SPEED",
+                42,
+                leftX,
+                startY - gap * 2
+            );
+
+            createFeature(
+                "2X SPEED",
+                43,
+                leftX,
+                startY - gap * 3
+            );
+
+            createFeature(
+                "3X SPEED",
+                44,
+                leftX,
+                startY - gap * 4
+            );
+
+            createFeature(
+                "4X SPEED",
+                45,
+                leftX,
+                startY - gap * 5
+            );
+
+
+            createFeature(
+                "CUSTOM SPEED",
+                46,
+                rightX,
+                startY
+            );
+
+            createFeature(
+                "FREEZE",
+                47,
+                rightX,
+                startY - gap
+            );
         }
+
         else {
 
             const char* title = "CATEGORY";
+
 
             switch (id) {
 
@@ -826,10 +964,11 @@ protected:
             }
 
 
-            auto titleLabel = CCLabelBMFont::create(
-                title,
-                "goldFont.fnt"
-            );
+            auto titleLabel =
+                CCLabelBMFont::create(
+                    title,
+                    "goldFont.fnt"
+                );
 
             titleLabel->setPosition({
                 390.f,
@@ -845,98 +984,7 @@ protected:
             );
 
 
-            auto text = CCLabelBMFont::create(
-                "MORE FEATURES COMING",
-                "bigFont.fnt"
-            );
-
-            text->setPosition({
-                390.f,
-                180.f
-            });
-
-            text->setScale(
-                0.27f
-            );
-
-            m_featureMenu->addChild(
-                text
-            );
-        }
-    }
-
-
-    // ========================================================
-    // CATEGORY CLICK
-    // ========================================================
-
-    void onCategory(CCObject* sender) {
-
-        auto button =
-            static_cast<CCMenuItemLabel*>(
-                sender
-            );
-
-        m_category = button->getTag();
-
-
-        // Move selected background
-
-        auto screen = CCDirector::sharedDirector()->getWinSize();
-
-        float panelH = screen.height * 0.80f;
-
-        if (panelH > 650.f)
-            panelH = 650.f;
-
-        if (panelH < 420.f)
-            panelH = screen.height * 0.88f;
-
-
-        float startY = panelH - 92.f;
-
-        m_selectedCategory->setPosition({
-            18.f,
-            startY - m_category * 32.f - 14.f
-        });
-
-
-        m_featureMenu->removeAllChildren();
-
-
-        if (m_category == 0)
-            showLevel();
-        else
-            showOtherCategory(m_category);
-    }
-
-
-    // ========================================================
-    // TOGGLE
-    // ========================================================
-
-    void onToggle(CCObject* sender) {
-
-        auto toggle =
-            static_cast<CCMenuItemToggler*>(
-                sender
-            );
-
-        int id = toggle->getTag();
-
-        bool enabled = toggle->isToggled();
-
-        m_states[id] = enabled;
-
-
-        log::info(
-            "ExternalHack: {} = {}",
-            id,
-            enabled
-        );
-    }
-
-
-    // ========================================================
-    // PLUS
-    // ==
+            auto text =
+                CCLabelBMFont::create(
+                    "MORE FEATURES COMING",
+     
