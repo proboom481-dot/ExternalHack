@@ -17,7 +17,6 @@ protected:
     CCLayerColor* m_selectedCategory = nullptr;
 
     bool m_states[128] = {};
-
     int m_currentCategory = 0;
 
 
@@ -40,7 +39,6 @@ protected:
         )) {
             return false;
         }
-
 
         const float W = 540.f;
         const float H = 360.f;
@@ -315,7 +313,7 @@ protected:
 
 
         // ====================================================
-        // TOP BUTTON MENU
+        // TOP MENU
         // ====================================================
 
         auto topMenu = CCMenu::create();
@@ -332,7 +330,7 @@ protected:
 
 
         // ====================================================
-        // ARROW
+        // TOP ARROW
         // ====================================================
 
         auto arrowSprite =
@@ -478,8 +476,7 @@ protected:
         float y
     ) {
 
-        bool state =
-            m_states[id];
+        bool state = m_states[id];
 
 
         // ====================================================
@@ -497,41 +494,44 @@ protected:
             );
 
 
-        auto toggle =
-            CCMenuItemToggler::create(
-                off,
-                on,
-                this,
-                menu_selector(
-                    ExternalHackMenu::onToggle
-                )
+        if (off && on) {
+
+            auto toggle =
+                CCMenuItemToggler::create(
+                    off,
+                    on,
+                    this,
+                    menu_selector(
+                        ExternalHackMenu::onToggle
+                    )
+                );
+
+
+            toggle->setTag(
+                id
             );
 
 
-        toggle->setTag(
-            id
-        );
+            toggle->setScale(
+                0.43f
+            );
 
 
-        toggle->setScale(
-            0.43f
-        );
+            toggle->toggle(
+                state
+            );
 
 
-        toggle->toggle(
-            state
-        );
+            toggle->setPosition(
+                x,
+                y
+            );
 
 
-        toggle->setPosition(
-            x,
-            y
-        );
-
-
-        m_features->addChild(
-            toggle
-        );
+            m_features->addChild(
+                toggle
+            );
+        }
 
 
         // ====================================================
@@ -1019,7 +1019,7 @@ protected:
 
 
     // ========================================================
-    // EMPTY CATEGORY
+    // OTHER CATEGORIES
     // ========================================================
 
     void showCategoryTitle(
@@ -1043,10 +1043,4 @@ protected:
             title = "ICON EFFECTS";
 
         else if (id == 6)
-            title = "LABELS";
-
-        else if (id == 7)
-            title = "SHORTCUTS";
-
-        else if (id == 8)
-            title = "CO
+            title =
