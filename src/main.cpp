@@ -1043,4 +1043,260 @@ protected:
             title = "ICON EFFECTS";
 
         else if (id == 6)
-            title =
+            title =        "LABELS";
+
+        auto label = CCLabelBMFont::create(
+            title,
+            "bigFont.fnt"
+        );
+
+        label->setPosition(
+            345.f,
+            315.f
+        );
+
+        label->setScale(
+            0.34f
+        );
+
+        m_featureLabels->addChild(
+            label
+        );
+
+        createFeature(
+            "FEATURE 1",
+            60 + id * 10,
+            180.f,
+            270.f
+        );
+
+        createFeature(
+            "FEATURE 2",
+            61 + id * 10,
+            180.f,
+            242.f
+        );
+
+        createFeature(
+            "FEATURE 3",
+            62 + id * 10,
+            350.f,
+            270.f
+        );
+
+        createFeature(
+            "FEATURE 4",
+            63 + id * 10,
+            350.f,
+            242.f
+        );
+    }
+
+
+    // ========================================================
+    // CATEGORY
+    // ========================================================
+
+    void onCategory(CCObject* sender) {
+
+        auto button =
+            static_cast<CCMenuItemLabel*>(sender);
+
+        int id = button->getTag();
+
+        m_currentCategory = id;
+
+        if (m_selectedCategory) {
+            m_selectedCategory->setPosition(
+                27.f,
+                290.5f - id * 27.f
+            );
+        }
+
+        if (id == 0)
+            showLevel();
+
+        else if (id == 1)
+            showUniversal();
+
+        else if (id == 4)
+            showSpeedhack();
+
+        else
+            showCategoryTitle(id);
+    }
+
+
+    // ========================================================
+    // TOGGLE
+    // ========================================================
+
+    void onToggle(CCObject* sender) {
+
+        auto toggle =
+            static_cast<CCMenuItemToggler*>(sender);
+
+        int id = toggle->getTag();
+
+        m_states[id] =
+            !m_states[id];
+    }
+
+
+    // ========================================================
+    // PLUS
+    // ========================================================
+
+    void onPlus(CCObject* sender) {
+
+        auto item =
+            static_cast<CCMenuItemLabel*>(sender);
+
+        int id = item->getTag();
+
+        const char* text = "Option";
+
+        if (id == 1)
+            text = "Noclip options";
+
+        else if (id == 2)
+            text = "Hitbox options";
+
+        else if (id == 7)
+            text = "Autoclicker options";
+
+        else if (id == 12)
+            text = "StartPos options";
+
+        else if (id == 40)
+            text = "Speedhack options";
+
+        auto popup = FLAlertLayer::create(
+            "ExternalHack",
+            text,
+            "OK"
+        );
+
+        popup->show();
+    }
+
+
+    // ========================================================
+    // INFO
+    // ========================================================
+
+    void onInfo(CCObject* sender) {
+
+        auto item =
+            static_cast<CCMenuItemSpriteExtra*>(sender);
+
+        int id = item->getTag();
+
+        const char* text = "ExternalHack feature.";
+
+        if (id == 1)
+            text = "Allows you to play through obstacles.";
+
+        else if (id == 2)
+            text = "Shows hitboxes during gameplay.";
+
+        else if (id == 3)
+            text = "Shows hitbox movement history.";
+
+        else if (id == 4)
+            text = "Shows the player's trajectory.";
+
+        else if (id == 7)
+            text = "Automatically clicks during gameplay.";
+
+        else if (id == 12)
+            text = "Switch between saved start positions.";
+
+        else if (id == 40)
+            text = "Changes game speed.";
+
+        auto popup = FLAlertLayer::create(
+            "ExternalHack",
+            text,
+            "OK"
+        );
+
+        popup->show();
+    }
+
+
+    // ========================================================
+    // EXIT
+    // ========================================================
+
+    void onExit(CCObject*) {
+
+        this->keyBackClicked();
+    }
+};
+
+
+// ============================================================
+// PAUSE LAYER
+// ============================================================
+
+class $modify(ExternalHackPauseLayer, PauseLayer) {
+
+    void customSetup() {
+
+        PauseLayer::customSetup();
+
+        auto menu = CCMenu::create();
+
+        menu->setPosition(
+            0.f,
+            0.f
+        );
+
+        this->addChild(
+            menu,
+            100
+        );
+
+        auto label =
+            CCLabelBMFont::create(
+                "EXTERNAL",
+                "bigFont.fnt"
+            );
+
+        label->setScale(
+            0.28f
+        );
+
+        auto button =
+            CCMenuItemLabel::create(
+                label,
+                this,
+                menu_selector(
+                    ExternalHackPauseLayer::onExternal
+                )
+            );
+
+        button->setPosition(
+            45.f,
+            30.f
+        );
+
+        menu->addChild(
+            button
+        );
+    }
+
+
+    void onExternal(CCObject*) {
+
+        auto menu =
+            new ExternalHackMenu();
+
+        if (menu->init()) {
+            menu->show();
+        }
+
+        menu->release();
+    }
+};
